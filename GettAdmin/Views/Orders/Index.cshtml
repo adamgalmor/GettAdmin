@@ -1,0 +1,97 @@
+﻿@model IEnumerable<GettAdmin.Orders>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Active Orders</h2>
+
+@*<p>
+    @Html.ActionLink("Create New", "Create")
+</p>*@
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Destination)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Origin)
+        </th>
+        <th>
+            Rider
+        </th>
+        <th>
+            Driver
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    if (item.IsActive) { 
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Destination)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Origin)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Riders.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Drivers.Name)
+            </td>
+            <td>
+                @Html.ActionLink("Details", "Details", new { id=item.OrderID }) |
+                @Html.ActionLink("Delete", "Delete", new { id=item.OrderID })
+            </td>
+        </tr>    
+    }
+}
+</table>
+
+<h2>Inactive Orders</h2>
+
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Destination)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Origin)
+        </th>
+        <th>
+            Rider
+        </th>
+        <th>
+            Driver
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        if (!item.IsActive)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Destination)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Origin)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Riders.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Drivers.Name)
+                </td>
+                <td>
+                    @Html.ActionLink("Assign Driver", "Assign", new { id = item.OrderID }) |
+                    @Html.ActionLink("Details", "Details", new { id = item.OrderID }) |
+                    @Html.ActionLink("Delete", "Delete", new { id = item.OrderID })
+                </td>
+            </tr>
+        }
+    }
+</table>
