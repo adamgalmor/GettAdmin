@@ -17,7 +17,7 @@ namespace GettAdmin.Controllers
         // GET: /Riders/
         public ActionResult Index()
         {
-            return View(db.Riders.ToList());
+            return PartialView(db.Riders.ToList());
         }
 
         // GET: /Riders/Details/5
@@ -35,12 +35,13 @@ namespace GettAdmin.Controllers
             return View(riders);
         }
 
-        // GET: /Orders/Create
+        // GET: /Riders/Create
         public ActionResult Create(int? id, string name)
         {
             TempData["RiderID"] = id;
             TempData["RiderName"] = name;
-            return RedirectToAction("Create", "Orders");
+            //return RedirectToAction("Create", "Orders");
+            return PartialView("Create");
         }
 
         // POST: /Riders/Create

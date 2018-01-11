@@ -1,15 +1,18 @@
-﻿@model IEnumerable<GettAdmin.Riders>
+﻿@model IEnumerable<GettAdmin.CommonViewModel>
 
 @{
     ViewBag.Title = "Index";
 }
 
-<h2>Riders</h2>
+<h2>Index</h2>
 
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
 <table class="table">
     <tr>
         <th>
-            Full Name
+            @Html.DisplayNameFor(model => model.Name)
         </th>
         <th>
             @Html.DisplayNameFor(model => model.Phone)
@@ -32,9 +35,9 @@
             @Html.DisplayFor(modelItem => item.Email)
         </td>
         <td>
-            @Html.ActionLink("Make Order", "Create", new { id = item.RiderID, name = item.Name })
-            @* | @Html.ActionLink("Edit", "Edit", new { id=item.RiderID }) |
-            @Html.ActionLink("Details", "Details", new { id=item.RiderID })*@
+            @Html.ActionLink("Edit", "Edit", new { id=item.DriverID }) |
+            @Html.ActionLink("Details", "Details", new { id=item.DriverID }) |
+            @Html.ActionLink("Delete", "Delete", new { id=item.DriverID })
         </td>
     </tr>
 }

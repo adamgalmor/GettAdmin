@@ -18,7 +18,12 @@ namespace GettAdmin.Controllers
         public ActionResult Index()
         {
             var orders = db.Orders.Include(o => o.Drivers).Include(o => o.Riders);
-            return View(orders.ToList());
+            return PartialView(orders.ToList());
+        }
+
+        public ActionResult InactiveOrders() {
+            var orders = db.Orders.Where(o => o.IsActive == false).Include(o => o.Drivers).Include(o => o.Riders);
+            return PartialView(orders.ToList());
         }
 
         // GET: /Orders/Details/5
@@ -37,18 +42,20 @@ namespace GettAdmin.Controllers
         }
 
         // GET: /Orders/Create
-        public ActionResult Create()
+        public ActionResult Create(int? id, string name)
         {
+            TempData["RiderID"] = id;
+            TempData["RiderName"] = name;
             ViewBag.DriverID = new SelectList(db.Drivers, "DriverID", "Name");
             ViewBag.RiderID = new SelectList(db.Riders, "RiderID", "Name");
-            return View();
+            return PartialView();
         }
 
         // POST: /Orders/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
-        [ValidateAntiForgeryToken]
+        //[ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include="Destination,Origin")] Orders orders)
         {
             try
@@ -59,12 +66,13 @@ namespace GettAdmin.Controllers
                     orders.RiderName = TempData["RiderName"].ToString();
                     db.Orders.Add(orders);
                     db.SaveChanges();
-                    return RedirectToAction("Riders");
+                    return PartialView(orders);
                 }
 
                 ViewBag.DriverID = new SelectList(db.Drivers, "DriverID", "Name", orders.DriverID);
                 ViewBag.RiderID = new SelectList(db.Riders, "RiderID", "Name", orders.RiderID);
-                return View(orders);
+                //return View(orders);
+                return null;
 
             }
             catch (Exception ex)
@@ -111,16 +119,16 @@ namespace GettAdmin.Controllers
 
         [HttpPost]
         // POST: /Orders/Assign/5
-        public ActionResult Assign(int? id, FormCollection form)
+        public ActionResult Assign(int? id, int? SelectedDriverID)
         {
-            if (form["AvailabelDriversDDL"] == null || id == null) {
-                return RedirectToAction("Index");
+            if (SelectedDriverID == null || id == null) {
+                return null;
             }
             try
             {
-                int selectedDriverID = int.Parse(form["AvailabelDriversDDL"]);
+                //int selectedDriverID = int.Parse(form["AvailabelDriversDDL"]);
                 int selectedOrderID = (int)id;
-                Drivers assignedDriver = db.Drivers.Where(d => d.DriverID == selectedDriverID).FirstOrDefault();
+                Drivers assignedDriver = db.Drivers.Where(d => d.DriverID == SelectedDriverID).FirstOrDefault();
                 Orders selectedOrder = db.Orders.Where(o => o.OrderID == selectedOrderID).FirstOrDefault();
 
                 selectedOrder.DriverID = assignedDriver.DriverID;
@@ -129,11 +137,11 @@ namespace GettAdmin.Controllers
                 db.Entry(selectedOrder).State = EntityState.Modified;
                 db.SaveChanges();
 
-                return RedirectToAction("Index");
+                return null;
             }
             catch (Exception ex)
             {
-                return RedirectToAction("Index");                
+                return null;
             }
         }
 
@@ -164,7 +172,7 @@ namespace GettAdmin.Controllers
                 };
 
             ViewBag.AvailableDrivers = new SelectList(items, "Value", "Text");
-            return View("Assign");
+            return PartialView("Assign");
         }
 
         // GET: /Orders/Delete/5

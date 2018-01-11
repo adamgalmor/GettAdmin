@@ -7,20 +7,30 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using GettAdmin;
+using GettAdmin.Models;
 
 namespace GettAdmin.Controllers
 {
-    public class DriversController : Controller
+    public class CommonController : Controller
     {
         private GettEntities db = new GettEntities();
 
-        // GET: /Drivers/
+        // GET: /Common/
+        //public ActionResult Index()
+        //{
+        //    return View(db.Drivers.ToList());
+        //}
+
         public ActionResult Index()
         {
-            return PartialView(db.Drivers.ToList());
-        }
+            CommonViewModel model = new CommonViewModel();
+            model.DriverModel = new Drivers();
+            model.RiderModel = new Riders();
+            model.OrderModel = new Orders();
 
-        // GET: /Drivers/Details/5
+            return View(model);
+        }
+        // GET: /Common/Details/5
         public ActionResult Details(int? id)
         {
             if (id == null)
@@ -35,30 +45,30 @@ namespace GettAdmin.Controllers
             return View(drivers);
         }
 
-        // GET: /Drivers/Create
+        // GET: /Common/Create
         public ActionResult Create()
         {
-            return PartialView("Create");
+            return View();
         }
 
-        // POST: /Drivers/Create
+        // POST: /Common/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
-        //[ValidateAntiForgeryToken]
+        [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include="DriverID,Name,Phone,Email")] Drivers drivers)
         {
             if (ModelState.IsValid)
             {
                 db.Drivers.Add(drivers);
                 db.SaveChanges();
-                return null;
+                return RedirectToAction("Index");
             }
 
-            return PartialView("Create");
+            return View(drivers);
         }
 
-        // GET: /Drivers/Edit/5
+        // GET: /Common/Edit/5
         public ActionResult Edit(int? id)
         {
             if (id == null)
@@ -73,7 +83,7 @@ namespace GettAdmin.Controllers
             return View(drivers);
         }
 
-        // POST: /Drivers/Edit/5
+        // POST: /Common/Edit/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
@@ -89,7 +99,7 @@ namespace GettAdmin.Controllers
             return View(drivers);
         }
 
-        // GET: /Drivers/Delete/5
+        // GET: /Common/Delete/5
         public ActionResult Delete(int? id)
         {
             if (id == null)
@@ -104,7 +114,7 @@ namespace GettAdmin.Controllers
             return View(drivers);
         }
 
-        // POST: /Drivers/Delete/5
+        // POST: /Common/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)

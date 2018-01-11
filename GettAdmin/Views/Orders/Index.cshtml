@@ -18,12 +18,12 @@
             @Html.DisplayNameFor(model => model.Origin)
         </th>
         <th>
-            Rider
+            Rider Full Name
         </th>
         <th>
-            Driver
+            Driver Full Name
         </th>
-        <th></th>
+        @*<th></th>*@
     </tr>
 
 @foreach (var item in Model) {
@@ -41,16 +41,16 @@
             <td>
                 @Html.DisplayFor(modelItem => item.Drivers.Name)
             </td>
-            <td>
+            @*<td>
                 @Html.ActionLink("Details", "Details", new { id=item.OrderID }) |
                 @Html.ActionLink("Delete", "Delete", new { id=item.OrderID })
-            </td>
+            </td>*@
         </tr>    
     }
 }
 </table>
 
-<h2>Inactive Orders</h2>
+@*<h2>Inactive Orders</h2>
 
 <table class="table">
     <tr>
@@ -94,4 +94,4 @@
             </tr>
         }
     }
-</table>
+</table>*@
