@@ -17,7 +17,19 @@ namespace GettAdmin.Controllers
         // GET: /Riders/
         public ActionResult Index()
         {
-            return PartialView(db.Riders.ToList());
+            List<Riders> ridersList = new List<Riders>();
+            foreach (var rider in db.Riders.ToList())
+            {
+                Riders temp = new Riders
+                {
+                    Name = rider.Name,
+                    Email = rider.Email,
+                    Phone = rider.Phone,
+                    RiderID = rider.RiderID
+                };
+                ridersList.Add(temp);
+            }
+            return Json(ridersList, JsonRequestBehavior.AllowGet);
         }
 
         // GET: /Riders/Details/5
@@ -40,7 +52,6 @@ namespace GettAdmin.Controllers
         {
             TempData["RiderID"] = id;
             TempData["RiderName"] = name;
-            //return RedirectToAction("Create", "Orders");
             return PartialView("Create");
         }
 

@@ -22,7 +22,6 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                @*@Html.ActionLink("GettAdmin", "Index", "Home", null, new { @class = "navbar-brand" })*@
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
@@ -38,18 +37,63 @@
     <table style="width:100%">
         <tr>
             <td>
-                <div id="divDrivers" class="divPanel"></div>
+                <h2>Drivers</h2>
+                <p>
+                    <a href="/drivers/Create">Create Driver</a>
+                </p>
+                <table id="driversTable" class="table">
+                    <thead>
+                        <tr>
+                            <th>Full Name</th>
+                            <th>Phone</th>
+                            <th>Email</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
             </td>
             <td style="float: right">
-                <div id="divRiders" class="divPanel"></div>
+                <h2>Riders</h2>
+                <table id="ridersTable" class="table">
+                    <thead>
+                        <tr>
+                            <th>Full Name</th>
+                            <th>Phone</th>
+                            <th>Email</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
             </td>
         </tr>
         <tr>
             <td>
-                <div id="divActiveOrders" class="divPanel"></div>
+                <h2>Active Orders</h2>
+                <table id="activeOrdersTable" class="table">
+                    <thead>
+                        <tr>
+                            <th>Destination</th>
+                            <th>Origin</th>
+                            <th>Rider Full Name</th>
+                            <th>Driver Full Name</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
             </td>
             <td style="float: right">
-                <div id="divInactiveOrders" class="divPanel"></div>
+                <h2>Inactive Orders</h2>
+                <table id="inactiveOrdersTable" class="table">
+                    <thead>
+                        <tr>
+                            <th>Destination</th>
+                            <th>Origin</th>
+                            <th>Rider Full Name</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
             </td>
         </tr>
     </table>
@@ -178,7 +222,30 @@
                         }
                         else {
                             $("#dialog").dialog("close");
-                            $('#divDrivers').empty();
+                            GetDrivers();
+                            app.setLocation("");
+                        }
+                    },
+                    error: function (xhr, error) {
+                        console.log(xhr);
+                        console.error(error);
+                    }
+                })
+            });
+
+            this.post('Drivers/Create', function () {
+                let dataObj = { Name: this.params["Name"], Phone: this.params["Phone"], Email: this.params["Email"] };
+                $.ajax({
+                    type: 'post',
+                    url: CreateDriverURL,
+                    data: dataObj,
+                    success: function (data) {
+                        if (data.indexOf("errors") != -1) {
+                            $("#dialog").empty();
+                            $("#dialog").html(data);
+                        }
+                        else {
+                            $("#dialog").dialog("close");
                             GetDrivers();
                             app.setLocation("");
                         }
@@ -197,9 +264,18 @@
                 method: 'get',
                 url: '/riders/'
             }
-               ).done(function (dataRcvd) {
-                   $('#divRiders').empty;
-                   $('#divRiders').html(dataRcvd);
+               ).done(function (json) {
+                   console.log(json);
+                   $('#ridersTable > tbody').html("");
+                    let tr;
+                    for (var i = 0; i < json.length; i++) {
+                        tr = $('<tr/>');
+                        tr.append("<td>" + json[i].Name + "</td>");
+                        tr.append("<td>" + json[i].Phone + "</td>");
+                        tr.append("<td>" + json[i].Email + "</td>");
+                        tr.append("<a href='/riders/Create/" + json[i].RiderID + "?name=" + json[i].Name + "'>Make Order</a>");
+                        $('#ridersTable').append(tr);
+                    }
                });
         }
         var GetDrivers= function () {
@@ -207,9 +283,17 @@
                 method: 'get',
                 url: '/drivers/'
             }
-               ).done(function (dataRcvd) {
-                   $('#divDrivers').empty();
-                   $('#divDrivers').html(dataRcvd);
+               ).done(function (json) {
+                   console.log(json);
+                   $('#driversTable > tbody').html("");
+                   let tr;
+                   for (var i = 0; i < json.length; i++) {
+                       tr = $('<tr/>');
+                       tr.append("<td>" + json[i].Name + "</td>");
+                       tr.append("<td>" + json[i].Phone + "</td>");
+                       tr.append("<td>" + json[i].Email + "</td>");
+                       $('#driversTable').append(tr);
+                   }
                });
         }
         var GetActiveOrders = function () {
@@ -217,9 +301,18 @@
                 method: 'get',
                 url: '/orders/'
             }
-               ).done(function (dataRcvd) {
-                   $('#divActiveOrders').empty();
-                   $('#divActiveOrders').html(dataRcvd);
+               ).done(function (json) {
+                   console.log(json);
+                   $('#activeOrdersTable > tbody').html("");
+                   let tr;
+                   for (var i = 0; i < json.length; i++) {
+                       tr = $('<tr/>');
+                       tr.append("<td>" + json[i].Destination + "</td>");
+                       tr.append("<td>" + json[i].Origin + "</td>");
+                       tr.append("<td>" + json[i].RiderName + "</td>");
+                       tr.append("<td>" + json[i].DriverName + "</td>");
+                       $('#activeOrdersTable').append(tr);
+                   }
                });
         }
         var GetInactiveOrders = function () {
@@ -227,9 +320,18 @@
                 method: 'get',
                 url: '/orders/InactiveOrders'
             }
-               ).done(function (dataRcvd) {
-                   $('#divInactiveOrders').empty();
-                   $('#divInactiveOrders').html(dataRcvd);
+               ).done(function (json) {
+                   console.log(json);
+                   $('#inactiveOrdersTable > tbody').html("");
+                   let tr;
+                   for (var i = 0; i < json.length; i++) {
+                       tr = $('<tr/>');
+                       tr.append("<td>" + json[i].Destination + "</td>");
+                       tr.append("<td>" + json[i].Origin + "</td>");
+                       tr.append("<td>" + json[i].RiderName + "</td>");
+                       tr.append("<a href='/orders/Assign/" + json[i].OrderID + "'>Assign Driver</a>");
+                       $('#inactiveOrdersTable').append(tr);
+                   }
                });
         }
 

@@ -17,13 +17,36 @@ namespace GettAdmin.Controllers
         // GET: /Orders/
         public ActionResult Index()
         {
-            var orders = db.Orders.Include(o => o.Drivers).Include(o => o.Riders);
-            return PartialView(orders.ToList());
+            List<Orders> activeOrdersList = new List<Orders>();
+            foreach (var activeOrder in db.Orders.Where(o => o.IsActive == true).Include(o => o.Drivers).Include(o => o.Riders))
+            {
+                Orders temp = new Orders
+                {
+                    Destination = activeOrder.Destination,
+                    Origin = activeOrder.Origin,
+                    RiderName = activeOrder.Riders.Name,
+                    DriverName = activeOrder.Drivers.Name
+
+                };
+                activeOrdersList.Add(temp);
+            }
+            return Json(activeOrdersList, JsonRequestBehavior.AllowGet);
         }
 
         public ActionResult InactiveOrders() {
-            var orders = db.Orders.Where(o => o.IsActive == false).Include(o => o.Drivers).Include(o => o.Riders);
-            return PartialView(orders.ToList());
+            List<Orders> inactiveOrdersList = new List<Orders>();
+            foreach (var inactiveOrder in db.Orders.Where(o => o.IsActive == false).Include(o => o.Drivers).Include(o => o.Riders))
+            {
+                Orders temp = new Orders
+                {
+                    Destination = inactiveOrder.Destination,
+                    Origin = inactiveOrder.Origin,
+                    RiderName = inactiveOrder.Riders.Name,
+                    OrderID = inactiveOrder.OrderID
+                };
+                inactiveOrdersList.Add(temp);
+            }
+            return Json(inactiveOrdersList, JsonRequestBehavior.AllowGet);
         }
 
         // GET: /Orders/Details/5
@@ -71,7 +94,6 @@ namespace GettAdmin.Controllers
 
                 ViewBag.DriverID = new SelectList(db.Drivers, "DriverID", "Name", orders.DriverID);
                 ViewBag.RiderID = new SelectList(db.Riders, "RiderID", "Name", orders.RiderID);
-                //return View(orders);
                 return null;
 
             }
@@ -126,7 +148,6 @@ namespace GettAdmin.Controllers
             }
             try
             {
-                //int selectedDriverID = int.Parse(form["AvailabelDriversDDL"]);
                 int selectedOrderID = (int)id;
                 Drivers assignedDriver = db.Drivers.Where(d => d.DriverID == SelectedDriverID).FirstOrDefault();
                 Orders selectedOrder = db.Orders.Where(o => o.OrderID == selectedOrderID).FirstOrDefault();

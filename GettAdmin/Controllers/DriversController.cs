@@ -17,7 +17,19 @@ namespace GettAdmin.Controllers
         // GET: /Drivers/
         public ActionResult Index()
         {
-            return PartialView(db.Drivers.ToList());
+            List<Drivers> driversList = new List<Drivers>();
+            foreach (var driver in db.Drivers.ToList())
+            {
+                Drivers temp = new Drivers
+                {
+                    Name = driver.Name,
+                    Email = driver.Email,
+                    Phone = driver.Phone,
+                    DriverID = driver.DriverID
+                };
+                driversList.Add(temp);
+            }
+            return Json(driversList, JsonRequestBehavior.AllowGet);
         }
 
         // GET: /Drivers/Details/5
